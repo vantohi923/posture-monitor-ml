@@ -1,0 +1,16 @@
+# Mediul virtual Python
+venv/
+__pycache__/
+*.pyc
+
+# Imaginile cu oameni nu se urcă niciodată (confidențialitate)
+data/imagini/
+
+# Jurnalul personal de utilizare
+sessions/
+
+# Editor / sistem
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
