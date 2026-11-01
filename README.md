@@ -89,6 +89,7 @@ ProiectML/
 ├── requirements.txt
 ├── .gitignore
 ├── src/
+│   ├── pose_detector.py    # Ziua 1 – MediaPipe Pose într-o clasă mică (refolosită peste tot)
 │   ├── test_camera.py      # Ziua 1 – verificăm camera și MediaPipe
 │   ├── features.py         # Ziua 2 – calculul caracteristicilor
 │   ├── collect_data.py     # Ziua 3 – strângem date (apăsând taste)
@@ -100,7 +101,7 @@ ProiectML/
 │   ├── robustness.py       # Ziua 8 – experimentul de robustețe
 │   └── stats.py            # Ziua 9 – statistici
 ├── data/                   # CSV-uri (+ imagini/, care NU se urcă pe GitHub)
-├── models/                 # modelul salvat
+├── models/                 # modelul MediaPipe (.task, descărcat) + modelul nostru salvat
 ├── sessions/               # jurnalul de utilizare (pentru statistici)
 └── results/                # grafice pentru README și LinkedIn
 ```
@@ -147,63 +148,74 @@ Fiecare zi durează aproximativ **2–3 ore**. Fiecare zi are:
 
 🛠️ **Pași:**
 
-1. Creează un mediu virtual (izolează bibliotecile acestui proiect):
+1. Creează un mediu virtual (izolează bibliotecile acestui proiect).
+   Folosim Python-ul **oficial** (3.13), prin `py -3.13`. Comanda simplă `python` poate porni
+   alt Python (de ex. din MSYS2), pentru care MediaPipe nu are pachete.
    ```bash
    cd E:\An3\ProiectML
-   python -m venv venv
+   py -3.13 -m venv venv
    venv\Scripts\activate
    ```
-2. Creează `requirements.txt`:
-   ```
-   mediapipe==0.10.14
-   opencv-python
-   numpy
-   pandas
-   scikit-learn
-   matplotlib
-   joblib
-   ```
-3. Instalează:
+2. Instalează bibliotecile din `requirements.txt` (versiunile exacte sunt fixate acolo):
    ```bash
    pip install -r requirements.txt
    ```
-   > Dacă `mediapipe` nu se instalează, folosește Python 3.11.
-4. Creează `src/test_camera.py`:
+3. Descarcă modelul MediaPipe Pose (aproximativ 9 MB, de la Google):
+   ```bash
+   curl -L -o models/pose_landmarker_full.task https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_full/float16/latest/pose_landmarker_full.task
+   ```
+4. `src/pose_detector.py`: ascunde partea de pregătire a MediaPipe ca să nu o repetăm în fiecare script.
+   Îl folosești în două linii:
+   ```python
+   detector = DetectorCorp()
+   puncte = detector.detecteaza(cadru)   # lista cu 33 de puncte sau None
+   ```
+   În interior: convertește cadrul din **BGR în RGB** (Lab 7 / Lab 13), îl dă modelului și
+   returnează punctele primei persoane.
+
+   > MediaPipe 1.x a scos vechiul API `mp.solutions.pose` (pe care îl vezi în multe tutoriale).
+   > Aici folosim API-ul nou, `PoseLandmarker` („Tasks”), care are nevoie de fișierul `.task` de la pasul 3.
+
+5. `src/test_camera.py`:
 
 ```python
 import cv2
-import mediapipe as mp
+from mediapipe.tasks.python.vision import PoseLandmarksConnections, drawing_utils
 
-mp_pose = mp.solutions.pose
-mp_desen = mp.solutions.drawing_utils
+from pose_detector import DetectorCorp
 
-pose = mp_pose.Pose()
+detector = DetectorCorp()
 camera = cv2.VideoCapture(0)   # 0 = camera laptopului
 
 while True:
     ok, cadru = camera.read()
     if not ok:
+        print("Nu pot citi de la camera. E folosita de alta aplicatie?")
         break
 
-    # Lab 7 / Lab 13: OpenCV citește imaginea în BGR, MediaPipe vrea RGB
-    rgb = cv2.cvtColor(cadru, cv2.COLOR_BGR2RGB)
-    rezultat = pose.process(rgb)
+    puncte = detector.detecteaza(cadru)
 
     # Desenăm punctele și liniile dintre ele (scheletul)
-    if rezultat.pose_landmarks:
-        mp_desen.draw_landmarks(cadru, rezultat.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+    if puncte:
+        drawing_utils.draw_landmarks(cadru, puncte, PoseLandmarksConnections.POSE_LANDMARKS)
 
     # Afișăm în oglindă, ca să fie natural pentru utilizator
-    cv2.imshow("Test camera", cv2.flip(cadru, 1))
+    cv2.imshow("Test camera (q = iesire)", cv2.flip(cadru, 1))
 
-    if cv2.waitKey(1) & 0xFF == ord("q"):   # q = ieșire
+    if cv2.waitKey(1) & 0xFF == ord("q"):
         break
 
 camera.release()
 cv2.destroyAllWindows()
 ```
 
-5. Rulează: `python src/test_camera.py`
+6. Rulează: `python src/test_camera.py`
+
+| Problemă | Soluție |
+|---|---|
+| `activate` dă eroare în PowerShell | Rulează o dată `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` |
+| Camera nu pornește | Închide Teams, Zoom sau alte aplicații care folosesc camera. Sau încearcă `VideoCapture(1)`. |
+| `No module named ...` | Nu ai activat mediul virtual: `venv\Scripts\activate` |
 
 ✅ **Gata când:** vezi scheletul pe corpul tău și se mișcă odată cu tine.
 
@@ -277,7 +289,7 @@ def extrage_caracteristici(puncte):
 ```python
 from features import extrage_caracteristici   # (sus, la importuri)
 ...
-        c = extrage_caracteristici(rezultat.pose_landmarks.landmark)
+        c = extrage_caracteristici(puncte)
         if c:
             print([round(x, 2) for x in c])
 ```
@@ -307,9 +319,9 @@ import os
 import sys
 
 import cv2
-import mediapipe as mp
 
 from features import extrage_caracteristici, NUME_CARACTERISTICI
+from pose_detector import DetectorCorp
 
 # Rulare: python src/collect_data.py andrei acasa_zi
 persoana, sesiune = sys.argv[1], sys.argv[2]
@@ -322,7 +334,7 @@ fisier = open(f"data/{persoana}_{sesiune}.csv", "w", newline="")
 scriitor = csv.writer(fisier)
 scriitor.writerow(["persoana", "sesiune", "eticheta"] + NUME_CARACTERISTICI)
 
-pose = mp.solutions.pose.Pose()
+detector = DetectorCorp()
 camera = cv2.VideoCapture(0)
 eticheta = None   # None = pauză, nu salvăm nimic
 numar = {"drept": 0, "cocosat": 0, "aplecat": 0}
@@ -334,10 +346,10 @@ while True:
         break
     cadru_nr += 1
 
-    rezultat = pose.process(cv2.cvtColor(cadru, cv2.COLOR_BGR2RGB))
+    puncte = detector.detecteaza(cadru)
 
-    if eticheta and rezultat.pose_landmarks:
-        caracteristici = extrage_caracteristici(rezultat.pose_landmarks.landmark)
+    if eticheta and puncte:
+        caracteristici = extrage_caracteristici(puncte)
         if caracteristici:
             scriitor.writerow([persoana, sesiune, eticheta] + caracteristici)
             numar[eticheta] += 1
@@ -582,16 +594,16 @@ from collections import deque
 
 import cv2
 import joblib
-import mediapipe as mp
 import numpy as np
 import pandas as pd
 
 from features import extrage_caracteristici, NUME_CARACTERISTICI
+from pose_detector import DetectorCorp
 
 SECUNDE_PANA_LA_ALERTA = 10
 
 model = joblib.load("models/model.joblib")
-pose = mp.solutions.pose.Pose()
+detector = DetectorCorp()
 camera = cv2.VideoCapture(0)
 
 ultimele_caracteristici = deque(maxlen=7)    # Lab 5: filtru median în timp
@@ -603,11 +615,11 @@ while True:
     if not ok:
         break
 
-    rezultat = pose.process(cv2.cvtColor(cadru, cv2.COLOR_BGR2RGB))
+    puncte = detector.detecteaza(cadru)
     postura = None
 
-    if rezultat.pose_landmarks:
-        caracteristici = extrage_caracteristici(rezultat.pose_landmarks.landmark)
+    if puncte:
+        caracteristici = extrage_caracteristici(puncte)
         if caracteristici:
             ultimele_caracteristici.append(caracteristici)
             netezite = np.median(ultimele_caracteristici, axis=0)
@@ -720,21 +732,21 @@ import random
 import cv2
 import joblib
 import matplotlib.pyplot as plt
-import mediapipe as mp
 import pandas as pd
 
 from features import extrage_caracteristici, NUME_CARACTERISTICI
+from pose_detector import DetectorCorp
 from preprocesare import intuneric, zgomot, blur, clahe_luminanta, reducere_zgomot
 
 model = joblib.load("models/model.joblib")
-pose = mp.solutions.pose.Pose(static_image_mode=True)   # imagini independente, nu video
+detector = DetectorCorp(video=False)   # imagini independente, nu video
 
 
 def prezice(img):
-    rezultat = pose.process(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
-    if not rezultat.pose_landmarks:
+    puncte = detector.detecteaza(img)
+    if not puncte:
         return None   # nu a găsit persoana => considerăm greșit
-    c = extrage_caracteristici(rezultat.pose_landmarks.landmark)
+    c = extrage_caracteristici(puncte)
     if c is None:
         return None
     return model.predict(pd.DataFrame([c], columns=NUME_CARACTERISTICI))[0]
@@ -852,11 +864,11 @@ plt.savefig("results/progres.png", dpi=150)
 MediaPipe poate da și o **mască**: cât de probabil e ca fiecare pixel să aparțină persoanei.
 
 ```python
-pose = mp.solutions.pose.Pose(enable_segmentation=True)   # înlocuiește linia veche
+detector = DetectorCorp(segmentare=True)   # înlocuiește linia veche
 
-# ... în buclă, după pose.process:
-    if rezultat.segmentation_mask is not None:
-        masca = (rezultat.segmentation_mask > 0.5).astype(np.uint8)        # binarizare (Lab 10)
+# ... în buclă, după detector.detecteaza(cadru):
+    if detector.ultima_masca is not None:
+        masca = (detector.ultima_masca > 0.5).astype(np.uint8)            # binarizare (Lab 10)
         nucleu = np.ones((15, 15), np.uint8)
         masca = cv2.morphologyEx(masca, cv2.MORPH_CLOSE, nucleu)          # închidere (Lab 10)
         fundal = cv2.GaussianBlur(cadru, (55, 55), 0)                     # blur (Lab 4)
