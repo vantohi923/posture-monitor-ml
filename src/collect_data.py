@@ -34,6 +34,8 @@ print(f"Salvez datele in {cale_csv}")
 detector = DetectorCorp()
 camera = cv2.VideoCapture(0)
 eticheta = None   # None = pauză, nu salvăm nimic
+numar = {"drept": 0, "cocosat": 0, "aplecat": 0}
+
 
 while True:
     ok, cadru = camera.read()
@@ -42,9 +44,23 @@ while True:
         break
 
     puncte = detector.detecteaza(cadru)
+        
+    if eticheta and puncte:
+        caracteristici = extrage_caracteristici(puncte)
+        if caracteristici:
+            scriitor.writerow([persoana, sesiune, eticheta] + caracteristici)
+            numar[eticheta] += 1
+            
+            # Păstrăm 1 imagine din 15 rânduri salvate, pentru experimentul din Ziua 8
+            if numar[eticheta] % 15 == 0:
+                folder = f"data/imagini/{eticheta}"
+                os.makedirs(folder, exist_ok=True)
+                cv2.imwrite(f"{folder}/{persoana}_{sesiune}_{numar[eticheta]}.jpg", cadru)
+
+
 
     afisare = cv2.flip(cadru, 1)
-    text = f"Eticheta: {eticheta or 'PAUZA'}"
+    text = f"Eticheta: {eticheta or 'PAUZA'}   {numar}"
     cv2.putText(afisare, text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
     cv2.imshow("Colectare date", afisare)
 
