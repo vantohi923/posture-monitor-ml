@@ -385,7 +385,7 @@ cv2.destroyAllWindows()
 4. Apeși `3` și stai **aplecat spre ecran** 2 minute.
 5. Apeși `q`.
 
-> ⚠️ Folosește **alt nume de sesiune** de fiecare dată, altfel fișierul se suprascrie.
+> ⚠️ Folosește **alt nume de sesiune** de fiecare dată. Dacă fișierul există deja, scriptul refuză să pornească, ca să nu pierzi o înregistrare.
 
 ✅ **Gata când:** ai `data/numele_tau_acasa_zi.csv` cu aproximativ 1000+ rânduri pentru fiecare postură.
 
@@ -896,11 +896,11 @@ detector = DetectorCorp(segmentare=True)   # înlocuiește linia veche
 **1. Creează `.gitignore`** (ce NU se urcă pe GitHub):
 ```
 venv/
-data/imagini/
+data/
 sessions/
 __pycache__/
 ```
-> Imaginile tale și ale colegilor **nu se urcă niciodată**. CSV-urile conțin doar numere și pot fi publice, dar întreabă-ți colegii.
+> Datele tale și ale colegilor (CSV-uri și imagini) **nu se urcă niciodată**: tot folderul `data/` rămâne doar pe laptop.
 
 **2. Urcă pe GitHub:**
 ```bash
