@@ -4,7 +4,7 @@
 > Modelul ML e antrenat pe date strânse de mine, iar tehnicile de la cursul de
 > **Prelucrarea Imaginilor** sunt folosite ca să meargă bine și la lumină slabă.
 
-**Stadiu:** ✅ Ziua 1–3 (detecție, caracteristici, colectare date) · 🔄 Ziua 4 (date de la colegi și explorare) · ⏳ Ziua 5–10
+**Stadiu:** ✅ Ziua 1–3 (detecție, caracteristici, colectare date) · 🔄 Ziua 4 (explorare gata, prima sesiune: ~7.500 rânduri echilibrate; urmează colegii) · ⏳ Ziua 5–10
 
 ---
 
