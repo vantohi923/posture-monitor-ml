@@ -102,7 +102,7 @@ ProiectML/
 │   ├── preprocesare.py     # Ziua 8 – tehnicile din laboratoare
 │   ├── robustness.py       # Ziua 8 – experimentul de robustețe
 │   └── stats.py            # Ziua 9 – statistici
-├── data/                   # CSV-uri (+ imagini/, care NU se urcă pe GitHub)
+├── data/                   # CSV-uri + imagini/ (tot folderul rămâne local, NU se urcă pe GitHub)
 ├── models/                 # modelul MediaPipe (.task, descărcat) + modelul nostru salvat
 ├── sessions/               # jurnalul de utilizare (pentru statistici)
 └── results/                # grafice pentru README și LinkedIn
