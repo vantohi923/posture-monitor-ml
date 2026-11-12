@@ -329,7 +329,6 @@ from pose_detector import DetectorCorp
 persoana, sesiune = sys.argv[1], sys.argv[2]
 
 TASTE = {ord("1"): "drept", ord("2"): "cocosat", ord("3"): "aplecat"}
-SALVEAZA_O_IMAGINE_LA = 15   # salvăm 1 imagine din 15 cadre (pentru Ziua 8)
 
 os.makedirs("data", exist_ok=True)
 fisier = open(f"data/{persoana}_{sesiune}.csv", "w", newline="")
@@ -340,13 +339,11 @@ detector = DetectorCorp()
 camera = cv2.VideoCapture(0)
 eticheta = None   # None = pauză, nu salvăm nimic
 numar = {"drept": 0, "cocosat": 0, "aplecat": 0}
-cadru_nr = 0
 
 while True:
     ok, cadru = camera.read()
     if not ok:
         break
-    cadru_nr += 1
 
     puncte = detector.detecteaza(cadru)
 
@@ -356,11 +353,11 @@ while True:
             scriitor.writerow([persoana, sesiune, eticheta] + caracteristici)
             numar[eticheta] += 1
 
-            # Păstrăm și câteva imagini pentru experimentul de robustețe
-            if cadru_nr % SALVEAZA_O_IMAGINE_LA == 0:
+            # Păstrăm 1 imagine din 15 rânduri salvate, pentru experimentul din Ziua 8
+            if numar[eticheta] % 15 == 0:
                 folder = f"data/imagini/{eticheta}"
                 os.makedirs(folder, exist_ok=True)
-                cv2.imwrite(f"{folder}/{persoana}_{sesiune}_{cadru_nr}.jpg", cadru)
+                cv2.imwrite(f"{folder}/{persoana}_{sesiune}_{numar[eticheta]}.jpg", cadru)
 
     afisare = cv2.flip(cadru, 1)
     text = f"Eticheta: {eticheta or 'PAUZA'}   {numar}"
