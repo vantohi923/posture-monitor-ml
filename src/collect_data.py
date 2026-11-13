@@ -56,7 +56,7 @@ while True:
                 folder = f"data/imagini/{eticheta}"
                 os.makedirs(folder, exist_ok=True)
                 cv2.imwrite(f"{folder}/{persoana}_{sesiune}_{numar[eticheta]}.jpg", cadru)
-
+    
 
 
     afisare = cv2.flip(cadru, 1)
