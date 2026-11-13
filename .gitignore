@@ -17,3 +17,6 @@ Thumbs.db
 
 # Modelul MediaPipe se descarcă (vezi Ziua 1), nu se urcă
 models/*.task
+
+# Modelul nostru antrenat se recreează cu: python src/evaluate.py
+models/*.joblib
