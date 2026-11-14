@@ -38,15 +38,15 @@ ne cocoșăm sau ne apropiem prea mult de ecran, ceea ce duce la dureri de spate
 
 ```mermaid
 flowchart LR
-    A["📷 Cameră<br/>cadru"] --> B["🌗 Preprocesare<br/>CLAHE (Lab 3, 13)"]
-    B --> C["🦴 MediaPipe Pose<br/>33 de puncte"]
-    C --> D["📐 6 caracteristici<br/>cap–umeri, lățime umeri..."]
-    D --> E["🧹 Filtru median<br/>ultimele 7 cadre (Lab 5)"]
-    E --> F["🤖 Regresie logistică<br/>drept / cocoșat / aplecat"]
-    F --> G["📊 Medie probabilități<br/>ultimele 15 cadre (Lab 4)"]
-    G --> H{"Postură greșită<br/>peste 10 s?"}
-    H -- da --> I["🚨 Chenar roșu<br/>ÎNDREAPTĂ-TE!"]
-    H -- nu --> J["✅ Chenar verde"]
+    A(("📷<br/>Cameră")) --- B(("🌗<br/>CLAHE"))
+    B --- C(("🦴<br/>MediaPipe<br/>33 puncte"))
+    C --- D(("📐<br/>6 caracte-<br/>ristici"))
+    D --- E(("🧹<br/>Filtru<br/>median"))
+    E --- F(("🤖<br/>Regresie<br/>logistică"))
+    F --- G(("📊<br/>Medie pe<br/>15 cadre"))
+    G --- H(("⏱️<br/>Peste<br/>10 s?"))
+    H -- da --- I(("🚨<br/>Chenar<br/>roșu"))
+    H -- nu --- J(("✅<br/>Chenar<br/>verde"))
 ```
 
 > Pe GitHub, blocul de mai sus apare **desenat** ca diagramă (Mermaid). În VS Code îl vezi
@@ -932,11 +932,11 @@ Schița pentru a doua diagramă:
 flowchart TB
     subgraph GRESIT["❌ Aleator (KFold): scor fals 0.97"]
         direction LR
-        G1["cadrul 100<br/>antrenare"] -. aproape identic .- G2["cadrul 101<br/>test"]
+        G1(("cadrul<br/>100<br/>antrenare")) -. aproape identic .- G2(("cadrul<br/>101<br/>test"))
     end
     subgraph CORECT["✅ Persoană nouă (LeaveOneGroupOut): scor real"]
         direction LR
-        P1["Persoana 1<br/>antrenare"] --- P2["Persoana 2<br/>antrenare"] --- P3["Persoana 3<br/>TEST, nevăzută"]
+        P1(("Persoana 1<br/>antrenare")) --- P2(("Persoana 2<br/>antrenare")) --- P3(("Persoana 3<br/>TEST"))
     end
 ```
 
