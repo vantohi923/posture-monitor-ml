@@ -4,7 +4,7 @@
 > Modelul ML e antrenat pe date strânse de mine, iar tehnicile de la cursul de
 > **Prelucrarea Imaginilor** sunt folosite ca să meargă bine și la lumină slabă.
 
-**Stadiu:** ✅ Ziua 1–3 (detecție, caracteristici, colectare date) · 🔄 Ziua 4 (explorare gata, prima sesiune: ~7.500 rânduri echilibrate; urmează colegii) · ⏳ Ziua 5–10
+**Stadiu:** ✅ Ziua 1–6 (detecție, caracteristici, date, comparație modele, analiza erorilor) · 🔄 Ziua 7 (aplicația live) · ⏳ Ziua 8–10
 
 ---
 
@@ -36,11 +36,21 @@ ne cocoșăm sau ne apropiem prea mult de ecran, ceea ce duce la dureri de spate
 
 ## ⚙️ Cum funcționează (pe scurt)
 
+```mermaid
+flowchart LR
+    A["📷 Cameră<br/>cadru"] --> B["🌗 Preprocesare<br/>CLAHE (Lab 3, 13)"]
+    B --> C["🦴 MediaPipe Pose<br/>33 de puncte"]
+    C --> D["📐 6 caracteristici<br/>cap–umeri, lățime umeri..."]
+    D --> E["🧹 Filtru median<br/>ultimele 7 cadre (Lab 5)"]
+    E --> F["🤖 Regresie logistică<br/>drept / cocoșat / aplecat"]
+    F --> G["📊 Medie probabilități<br/>ultimele 15 cadre (Lab 4)"]
+    G --> H{"Postură greșită<br/>peste 10 s?"}
+    H -- da --> I["🚨 Chenar roșu<br/>ÎNDREAPTĂ-TE!"]
+    H -- nu --> J["✅ Chenar verde"]
 ```
- Camera ──► Preprocesare ──► MediaPipe Pose ──► Caracteristici ──► Model ML ──► Netezire ──► Alertă
- (cadru)    (CLAHE, Lab 3,13)  (33 puncte ale    (unghiuri,          (Random     în timp      + statistici
-                                corpului)          distanțe)           Forest)    (Lab 4, 5)
-```
+
+> Pe GitHub, blocul de mai sus apare **desenat** ca diagramă (Mermaid). În VS Code îl vezi
+> desenat cu extensia *Markdown Preview Mermaid Support*.
 
 1. **Camera** dă un cadru (o imagine).
 2. **Preprocesare:** dacă e întuneric, îmbunătățim contrastul (tehnici din laborator).
@@ -909,10 +919,41 @@ git commit -m "Monitor de postura cu ML"
 ```
 Apoi creează un repository pe github.com și urmează instrucțiunile de acolo (`git remote add ...`, `git push`).
 
-**3. Actualizează README-ul** pentru vizitatori: un GIF cu aplicația sus de tot, tabelul cu modelele,
+**3. Diagramele proiectului** (ca să explici vizual, în README, video și interviu):
+
+| Diagramă | Ce arată | Unde o folosești |
+|---|---|---|
+| **Cum funcționează** | drumul cameră → puncte → caracteristici → model → alertă (vezi [mai sus](#️-cum-funcționează-pe-scurt)) | README sus, video secunda 12–22, interviu |
+| **Cum am testat corect** | testare aleatoare (falsă) vs persoană nouă (reală) | video, partea cu data leakage |
+
+Schița pentru a doua diagramă:
+
+```mermaid
+flowchart TB
+    subgraph GRESIT["❌ Aleator (KFold): scor fals 0.97"]
+        direction LR
+        G1["cadrul 100<br/>antrenare"] -. aproape identic .- G2["cadrul 101<br/>test"]
+    end
+    subgraph CORECT["✅ Persoană nouă (LeaveOneGroupOut): scor real"]
+        direction LR
+        P1["Persoana 1<br/>antrenare"] --- P2["Persoana 2<br/>antrenare"] --- P3["Persoana 3<br/>TEST, nevăzută"]
+    end
+```
+
+Aplicații (toate gratuite):
+
+| Aplicație | Pentru ce | De ce |
+|---|---|---|
+| **Mermaid** (direct în README) | GitHub | e text, GitHub îl desenează singur, se versionează cu git. Încerci live pe [mermaid.live](https://mermaid.live) |
+| **Excalidraw** ([excalidraw.com](https://excalidraw.com)) | video LinkedIn | stil „desenat de mână”, arată prietenos pe ecran; exporți PNG |
+| **draw.io** ([app.diagrams.net](https://app.diagrams.net)) | prezentări, CV | cutii și săgeți curate, aspect profesional; exporți PNG/SVG |
+
+> Sfat: o diagramă = o idee. Maximum 6–8 cutii, text scurt în fiecare, iconițe mari pentru video.
+
+**4. Actualizează README-ul** pentru vizitatori: un GIF cu aplicația sus de tot, tabelul cu modelele,
 graficele din `results/` și secțiunea „Ce am învățat”.
 
-**4. Video (aproximativ 45 de secunde, fără să depinzi de sunet):**
+**5. Video (aproximativ 45 de secunde, fără să depinzi de sunet):**
 
 | Secunde | Ce arăți |
 |---|---|
@@ -922,7 +963,7 @@ graficele din `results/` și secțiunea „Ce am învățat”.
 | 22–32 | Imaginea întuneric / CLAHE și graficul de robustețe |
 | 32–45 | Tabelul cu modelele, graficul cu progresul tău și linkul spre GitHub |
 
-**5. Postarea pe LinkedIn (șablon):**
+**6. Postarea pe LinkedIn (șablon):**
 > Stăteam cocoșat la laptop 60% din zi. Așa că am construit un model ML care mă supraveghează. 🪑
 >
 > 🔹 Am strâns propriul set de date: X cadre de la 5 persoane
