@@ -12,12 +12,13 @@
 
 1. [Ce problemă rezolvă](#-ce-problemă-rezolvă)
 2. [Cum funcționează (pe scurt)](#-cum-funcționează-pe-scurt)
-3. [Rezultatul final](#-rezultatul-final)
-4. [Structura proiectului](#-structura-proiectului)
-5. [Legătura cu laboratoarele de Prelucrarea Imaginilor](#-legătura-cu-laboratoarele-de-prelucrarea-imaginilor)
-6. [Planul pe 10 zile](#-planul-pe-10-zile)
-7. [Dicționar ML (cuvintele pe care trebuie să le știi)](#-dicționar-ml)
-8. [Întrebări de interviu la care trebuie să știi să răspunzi](#-întrebări-de-interviu)
+3. [Arhitectura: ce am construit (Ziua 1–7)](#-arhitectura-ce-am-construit-ziua-17)
+4. [Rezultatul final](#-rezultatul-final)
+5. [Structura proiectului](#-structura-proiectului)
+6. [Legătura cu laboratoarele de Prelucrarea Imaginilor](#-legătura-cu-laboratoarele-de-prelucrarea-imaginilor)
+7. [Planul pe 10 zile](#-planul-pe-10-zile)
+8. [Dicționar ML (cuvintele pe care trebuie să le știi)](#-dicționar-ml)
+9. [Întrebări de interviu la care trebuie să știi să răspunzi](#-întrebări-de-interviu)
 
 ---
 
@@ -63,6 +64,60 @@ flowchart LR
 
 > **Ce e ML-ul meu aici?** MediaPipe doar găsește punctele. **Decizia** (ce postură e)
 > o ia modelul pe care **l-am antrenat eu**, pe date **strânse de mine**, evaluat corect.
+
+---
+
+## 🗺️ Arhitectura: ce am construit (Ziua 1–7)
+
+Diagrama pe care o desenez la interviu: **două fluxuri** care folosesc **aceleași caracteristici**
+(`features.py`) și sunt legate prin **modelul salvat**.
+
+```mermaid
+flowchart TB
+    subgraph OFFLINE["🏋️ OFFLINE: construiesc modelul (Ziua 1–6)"]
+        direction LR
+        A(("📷<br/>Cameră")) --- B(("🦴<br/>MediaPipe<br/>33 puncte"))
+        B --- C(("📐<br/>6 caracte-<br/>ristici"))
+        C --- D(("🏷️<br/>Etichete<br/>tastele 1/2/3"))
+        D --- E(("🔍<br/>Explorare<br/>boxplot"))
+        E --- F(("⚖️<br/>3 modele<br/>aleator vs<br/>grupuri noi"))
+        F --- G(("📉<br/>Analiza<br/>erorilor"))
+    end
+
+    G --- M[("💾 model.joblib<br/>Regresie logistică")]
+
+    subgraph ONLINE["⚡ ONLINE: aplicația live (Ziua 7)"]
+        direction LR
+        L1(("📷<br/>Cameră")) --- L2(("🦴<br/>MediaPipe"))
+        L2 --- L3(("📐<br/>aceleași 6<br/>caracte-<br/>ristici"))
+        L3 --- L4(("🧹<br/>Median<br/>7 cadre"))
+        L4 --- L5(("🤖<br/>Model"))
+        L5 --- L6(("📊<br/>Medie<br/>15 cadre"))
+        L6 --- L7(("⏱️<br/>Peste 10 s?<br/>🚨 alertă"))
+    end
+
+    M --- L5
+```
+
+**Cum o explic (un cerc = o propoziție):**
+
+| Pas | Ce spun | Cifra de ținut minte |
+|---|---|---|
+| 📷 → 🦴 | MediaPipe (gata antrenat) îmi dă 33 de puncte; eu nu antrenez detecția | 33 de puncte |
+| 📐 | Din puncte calculez 6 numere, **împărțite la lățimea umerilor**, ca să nu conteze distanța față de cameră | 6 caracteristici |
+| 🏷️ | Mi-am făcut **propriul set de date**: apăs 1/2/3 în timp ce stau drept / cocoșat / aplecat | ~9.200 de rânduri, 2 sesiuni |
+| 🔍 | Boxplot-urile arată că `cap_umeri` separă „drept”, iar `latime_umeri` separă „aplecat” | — |
+| ⚖️ | Testarea **aleatoare minte** (cadre vecine aproape identice); testez pe **grupuri nevăzute** | Random Forest 0.97 → **0.41** |
+| ⚖️ | Aleg **regresia logistică**: mai simplă, dar generalizează mai bine | F1 **0.65** pe grupuri noi |
+| 📉 | Matricea de confuzie: cel mai des confundă **cocoșat cu drept** | acuratețe 0.69 |
+| 💾 | Antrenez pe toate datele și salvez modelul | `model.joblib` |
+| 🧹 📊 | Live: **mediană** pe caracteristici (Lab 5) și **medie** pe probabilități (Lab 4), ca să nu pâlpâie | 7 și 15 cadre |
+| ⏱️ | Alertă doar dacă postura greșită ține **peste 10 secunde** | 10 s |
+
+> **Întrebarea care vine sigur:** „De ce două fluxuri?” Pentru că antrenarea se face **o singură dată**,
+> pe date strânse, iar aplicația rulează **în timp real** și doar încarcă modelul. Important e ca
+> ambele să calculeze caracteristicile **la fel** (același `features.py`), altfel modelul primește
+> altceva decât a învățat.
 
 ---
 
@@ -923,7 +978,7 @@ Apoi creează un repository pe github.com și urmează instrucțiunile de acolo 
 
 | Diagramă | Ce arată | Unde o folosești |
 |---|---|---|
-| **Cum funcționează** | drumul cameră → puncte → caracteristici → model → alertă (vezi [mai sus](#️-cum-funcționează-pe-scurt)) | README sus, video secunda 12–22, interviu |
+| **Cum funcționează** | drumul cameră → puncte → caracteristici → model → alertă (vezi [mai sus](#-cum-funcționează-pe-scurt)) | README sus, video secunda 12–22, interviu |
 | **Cum am testat corect** | testare aleatoare (falsă) vs persoană nouă (reală) | video, partea cu data leakage |
 
 Schița pentru a doua diagramă:
