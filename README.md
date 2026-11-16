@@ -586,9 +586,12 @@ import os
 import joblib
 import matplotlib.pyplot as plt
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.inspection import permutation_importance
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import ConfusionMatrixDisplay, classification_report
 from sklearn.model_selection import LeaveOneGroupOut, cross_val_predict
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
 
 from features import NUME_CARACTERISTICI
 
@@ -597,7 +600,8 @@ X = date[NUME_CARACTERISTICI]
 y = date["eticheta"]
 grupuri = date["persoana"] if date["persoana"].nunique() > 1 else date["sesiune"]
 
-model = RandomForestClassifier(n_estimators=200, random_state=0)
+# Cel mai bun model pe grupuri noi în Ziua 5 (Random Forest se potrivea prea mult pe datele de antrenare)
+model = make_pipeline(StandardScaler(), LogisticRegression(max_iter=1000))
 os.makedirs("results", exist_ok=True)
 
 # 1. Predicții pe persoane noi (fiecare persoană e prezisă de un model care n-a văzut-o)
@@ -616,7 +620,9 @@ print("\nAcuratețe pe fiecare persoană:\n", date.groupby(grupuri)["corect"].me
 
 # 4. Antrenăm modelul final pe TOATE datele și vedem ce caracteristici contează
 model.fit(X, y)
-importanta = pd.Series(model.feature_importances_, index=NUME_CARACTERISTICI).sort_values()
+# Cât scade scorul dacă amestecăm o caracteristică? Cu cât scade mai mult, cu atât contează mai mult
+rezultat = permutation_importance(model, X, y, n_repeats=5, random_state=0, scoring="f1_macro")
+importanta = pd.Series(rezultat.importances_mean, index=NUME_CARACTERISTICI).sort_values()
 importanta.plot.barh(title="Importanța caracteristicilor")
 plt.tight_layout()
 plt.savefig("results/importanta.png", dpi=150)
@@ -638,6 +644,8 @@ print("\nModel salvat în models/model.joblib")
 - **Matricea de confuzie:** pe diagonală sunt răspunsurile corecte, în afara ei confuziile.
 - **Precision:** din cele prezise „cocoșat”, câte chiar erau. **Recall:** din cele care erau „cocoșat”, câte am prins.
 - **Analiza erorilor** te ajută să știi ce date să mai strângi.
+- **Permutation importance:** amesteci o coloană și vezi cât scade scorul. Merge la orice model,
+  nu doar la Random Forest (care are `feature_importances_` gata calculat).
 
 ---
 
