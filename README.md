@@ -4,7 +4,7 @@
 > Modelul ML e antrenat pe date strânse de mine, iar tehnicile de la cursul de
 > **Prelucrarea Imaginilor** sunt folosite ca să meargă bine și la lumină slabă.
 
-**Stadiu:** ✅ Ziua 1–6 (detecție, caracteristici, date, comparație modele, analiza erorilor) · 🔄 Ziua 7 (aplicația live) · ⏳ Ziua 8–10
+**Stadiu:** ✅ Ziua 1–6 (detecție, caracteristici, date, comparație modele, analiza erorilor) · 🔄 Ziua 7 (aplicația live: predicția pe fiecare cadru e gata; urmează filtrele și alerta) · ⏳ Ziua 8–10
 
 ---
 
