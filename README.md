@@ -135,16 +135,16 @@ La sfârșitul celor 10 zile trebuie să ai:
 | 6 | Graficul cu progresul tău zilnic | `results/progres.png` |
 | 7 | Cod pe GitHub, cu README, plus video de 45 de secunde pe LinkedIn | — |
 
-Exemplu de tabel final (cifrele tale vor fi altele):
+Rezultatele mele de acum (o persoană, 2 sesiuni; se actualizează după datele colegilor):
 
-| Model | F1 (împărțire aleatorie) ❌ | F1 (persoane noi) ✅ |
+| Model | F1 (împărțire aleatorie) ❌ | F1 (sesiune nouă) ✅ |
 |---|---|---|
 | Baseline (ghicește mereu clasa cea mai frecventă) | 0.17 | 0.17 |
-| Regresie logistică | 0.91 | 0.82 |
-| Random Forest | 0.99 | 0.86 |
+| Regresie logistică ⭐ | 0.86 | **0.65** |
+| Random Forest | 0.97 | 0.41 |
 
-> Observă: la împărțirea aleatorie rezultatele sunt **prea bune ca să fie adevărate**.
-> Explicăm de ce în Ziua 5. E cea mai importantă lecție din proiect.
+> Observă: la împărțirea aleatorie rezultatele sunt **prea bune ca să fie adevărate**, iar Random Forest,
+> „câștigătorul” fals, pică cel mai tare pe date noi. Explicăm de ce în Ziua 5. E cea mai importantă lecție din proiect.
 
 ---
 
@@ -1030,8 +1030,8 @@ graficele din `results/` și secțiunea „Ce am învățat”.
 > Stăteam cocoșat la laptop 60% din zi. Așa că am construit un model ML care mă supraveghează. 🪑
 >
 > 🔹 Am strâns propriul set de date: X cadre de la 5 persoane
-> 🔹 Am comparat 3 modele; Random Forest: F1 = 0.86 pe persoane pe care modelul nu le-a văzut
-> 🔹 Am aflat că testarea aleatorie dădea un fals 0.99 (data leakage!)
+> 🔹 Am comparat 3 modele, testate pe persoane pe care modelul nu le-a văzut
+> 🔹 Am aflat că testarea aleatorie dădea un fals 0.97, care scădea la 0.41 pe date noi (data leakage!)
 > 🔹 Am aplicat tehnici de la cursul de Prelucrarea Imaginilor (CLAHE, filtre median/medie)
 >   ca să meargă și seara: acuratețea la lumină slabă a crescut de la 0.52 la 0.81
 >
@@ -1078,7 +1078,7 @@ Dacă poți răspunde la toate, cunoști proiectul suficient de bine:
 **De ce?**
 4. De ce ai împărțit distanțele la lățimea umerilor?
 5. De ce F1 macro și nu doar acuratețe?
-6. De ce Random Forest? Ce avantaj are față de regresia logistică aici?
+6. De ce regresie logistică și nu Random Forest, deși Random Forest avea scorul mai mare la testarea aleatorie?
 7. De ce mediana în timp pentru caracteristici, dar media pentru probabilități?
 
 **Gândire critică**
