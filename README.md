@@ -44,7 +44,7 @@ Pentru cine vrea să încerce proiectul (Windows, Python 3.13):
 git clone https://github.com/vantohi923/posture-monitor-ml.git
 cd posture-monitor-ml
 py -3.13 -m venv venv
-venv\Scriptsctivate
+venv\Scripts\activate
 pip install -r requirements.txt
 curl -L -o models/pose_landmarker_full.task https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_full/float16/latest/pose_landmarker_full.task
 ```
