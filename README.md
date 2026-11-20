@@ -11,6 +11,7 @@
 ## 📌 Cuprins
 
 1. [Ce problemă rezolvă](#-ce-problemă-rezolvă)
+   - [Rulare rapidă](#-rulare-rapidă)
 2. [Cum funcționează (pe scurt)](#-cum-funcționează-pe-scurt)
 3. [Arhitectura: ce am construit (Ziua 1–7)](#-arhitectura-ce-am-construit-ziua-17)
 4. [Rezultatul final](#-rezultatul-final)
@@ -32,6 +33,32 @@ ne cocoșăm sau ne apropiem prea mult de ecran, ceea ce duce la dureri de spate
 - recunoaște 3 posturi: **drept**, **cocoșat**, **aplecat spre ecran**;
 - te avertizează doar dacă stai greșit **mai mult de 10 secunde** (nu la fiecare mișcare);
 - îți arată statistici: „azi ai stat drept 72% din timp”.
+
+---
+
+## 🚀 Rulare rapidă
+
+Pentru cine vrea să încerce proiectul (Windows, Python 3.13):
+
+```bash
+git clone https://github.com/vantohi923/posture-monitor-ml.git
+cd posture-monitor-ml
+py -3.13 -m venv venv
+venv\Scriptsctivate
+pip install -r requirements.txt
+curl -L -o models/pose_landmarker_full.task https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_full/float16/latest/pose_landmarker_full.task
+```
+
+| Ce vrei | Comanda |
+|---|---|
+| Vezi scheletul și caracteristicile live | `python src/test_camera.py` |
+| Îți înregistrezi propriile date (1/2/3 = drept/cocoșat/aplecat, 0 = pauză, q = ieșire) | `python src/collect_data.py numele_tau acasa_zi` |
+| Compari modelele (aleator vs grupuri noi) | `python src/train.py` |
+| Antrenezi și salvezi modelul final | `python src/evaluate.py` |
+| Pornești aplicația live | `python src/app.py` |
+
+> Datele mele nu sunt în repository (confidențialitate), deci `train.py`, `evaluate.py` și `app.py`
+> merg după ce îți înregistrezi propriile date cu `collect_data.py`.
 
 ---
 
