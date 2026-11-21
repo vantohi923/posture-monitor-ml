@@ -484,6 +484,14 @@ cv2.destroyAllWindows()
 - **Etichetare:** fiecare exemplu are răspunsul corect atașat.
 - Datele trebuie să conțină și **cazuri grele** (puțin cocoșat), altfel modelul învață doar extremele.
 
+⚠️ **Probleme pe care le-am întâlnit:**
+
+| Problemă | Cauza | Soluție |
+|---|---|---|
+| `Exista deja data/..._....csv` | protecția anti-suprascriere: sesiunea există deja | alege alt nume de sesiune sau șterge fișierul de test |
+| `IndentationError: unexpected indent` după o înregistrare | am apăsat `0` când era activ VS Code, nu fereastra camerei, și cifra a ajuns în cod | **dă click pe fereastra camerei** înainte să apeși 1/2/3/0/q |
+| Contorul nu crește deși ai apăsat 1/2/3 | umerii nu se văd (ieși din cadru sau ești prea aproape) | dă-te puțin înapoi, ca umerii să fie în imagine |
+
 ---
 
 ### Ziua 4 – Mai multe date și prima privire asupra lor
