@@ -173,6 +173,17 @@ Rezultatele mele de acum (o persoană, 2 sesiuni; se actualizează după datele 
 > Observă: la împărțirea aleatorie rezultatele sunt **prea bune ca să fie adevărate**, iar Random Forest,
 > „câștigătorul” fals, pică cel mai tare pe date noi. Explicăm de ce în Ziua 5. E cea mai importantă lecție din proiect.
 
+**Cum evoluează scorul pe date noi pe măsură ce adaug oameni** (F1 macro, testat pe grupuri nevăzute):
+
+| Date | Testat pe | Regresie logistică | Random Forest |
+|---|---|---|---|
+| 1 persoană, 2 sesiuni | sesiune nouă | 0.65 | 0.41 |
+| 2 persoane (eu + fratele meu, cu doar ~750 de cadre) | **persoană nouă** | 0.47 | 0.58 |
+| 4–5 persoane | persoană nouă | *urmează* | *urmează* |
+
+> Scăderea e cinstită: testul pe o **persoană** nouă e mult mai greu decât pe o sesiune nouă,
+> iar a doua persoană are încă puține date. Graficele din `results/` arată stadiul actual.
+
 ---
 
 ## 📁 Structura proiectului
