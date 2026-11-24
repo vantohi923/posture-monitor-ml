@@ -1128,8 +1128,9 @@ Dacă poți răspunde la toate, cunoști proiectul suficient de bine:
 7. De ce mediana în timp pentru caracteristici, dar media pentru probabilități?
 
 **Gândire critică**
-8. Rezultatul cu împărțirea aleatorie era 0.99. De ce nu e corect?
+8. Rezultatul cu împărțirea aleatorie era 0.97. De ce nu e corect?
 9. Unde greșește modelul? Ce date ai mai strânge?
+   - Bonus: când ai adăugat a doua persoană, scorul a scăzut. De ce e de fapt un semn bun?
 10. Ce e mai grav aici: o alertă falsă sau o postură greșită care nu e detectată?
 11. De ce CLAHE pe canalul L și nu pe R, G, B?
 12. Ce s-ar întâmpla cu camera pusă mult mai sus sau pentru un om de 2 m?
