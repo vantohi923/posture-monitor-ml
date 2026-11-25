@@ -1109,6 +1109,10 @@ graficele din `results/` și secțiunea „Ce am învățat”.
 | **Normalizare** | Aducerea valorilor la o scară comparabilă |
 | **Augmentare** | Generarea de date noi prin modificarea celor existente (rotiri, întuneric, zgomot) |
 | **Model pre-antrenat** | Un model antrenat deja de altcineva (MediaPipe), pe care îl folosești ca piesă |
+| **StandardScaler** | Aduce fiecare caracteristică la medie 0 și abatere 1, ca niciuna să nu „cântărească” mai mult doar pentru că are numere mai mari |
+| **Pipeline** | Pași legați într-un singur model (de ex. StandardScaler → regresie logistică), ca scalarea să se învețe doar din datele de antrenare |
+| **Permutation importance** | Amesteci o caracteristică și vezi cât scade scorul: cu cât scade mai mult, cu atât contează mai mult |
+| **predict_proba** | În loc de un singur răspuns, modelul dă probabilitatea fiecărei clase (de ex. drept 0.7, cocoșat 0.2, aplecat 0.1) |
 
 ---
 
